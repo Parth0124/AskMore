@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pymongo
+passlib[bcrypt]
+pyjwt
+langchain
+sentence-transformers
+chromadb
+python-dotenv
+tiktoken
