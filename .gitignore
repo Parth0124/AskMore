@@ -1,0 +1,8 @@
+*.env
+/askmore/
+/data/
+/vector_db/
+*.pkl
+backend/vector_db/index.faiss
+backend/vector_db/index.pkl
+backend/askmore/lib/python3.11/site-packages/numpy/.dylibs/libopenblas64_.0.dylib

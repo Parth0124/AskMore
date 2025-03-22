@@ -1,0 +1,13 @@
+prefix=/Users/parthabhang/Documents/IIIT Dharwad/Semester 6/Mini Project/AskMore/backend/askmore
+exec_prefix=/Users/parthabhang/Documents/IIIT Dharwad/Semester 6/Mini Project/AskMore/backend/askmore
+libdir=/Users/parthabhang/Documents/IIIT Dharwad/Semester 6/Mini Project/AskMore/backend/askmore/lib
+sharedlibdir=/Users/parthabhang/Documents/IIIT Dharwad/Semester 6/Mini Project/AskMore/backend/askmore/lib
+includedir=/Users/parthabhang/Documents/IIIT Dharwad/Semester 6/Mini Project/AskMore/backend/askmore/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.13
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}
