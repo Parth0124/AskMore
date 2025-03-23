@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { Menu, MessageSquare, PlusCircle, Loader } from "lucide-react";
 import { authFetch } from "../services/api";
@@ -11,7 +11,8 @@ interface ChatMessage {
 
 interface ChatEntry {
   id: string;
-  title: string;
+  question: string;
+  answer: string;
   time: Date;
 }
 
@@ -19,38 +20,55 @@ interface DashboardProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   onNewChat?: () => void;
+  onSelectChat?: (messages: any[]) => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
   isOpen,
   setIsOpen,
   onNewChat,
+  onSelectChat,
 }) => {
   const [todayChats, setTodayChats] = useState<ChatEntry[]>([]);
   const [previousChats, setPreviousChats] = useState<ChatEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Get token from localStorage
   const token = localStorage.getItem("auth_token");
   const isLoggedIn = !!token;
+  const pollingIntervalRef = useRef<number | null>(null);
 
   useEffect(() => {
-    // Only fetch chat history if user is logged in and dashboard is open
+    // Initial fetch when component mounts or dashboard opens
     if (isLoggedIn && isOpen) {
       fetchChatHistory();
+
+      // Set up polling interval (every 5 seconds)
+      pollingIntervalRef.current = window.setInterval(() => {
+        if (isLoggedIn && isOpen) {
+          fetchChatHistory(false); // false means don't show loading indicator for polling
+        }
+      }, 5000);
     }
+
+    // Clean up interval when component unmounts or dashboard closes
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
   }, [isLoggedIn, isOpen]);
 
-  const fetchChatHistory = async () => {
+  const fetchChatHistory = async (showLoading = true) => {
     if (!token) return;
 
-    setLoading(true);
+    if (showLoading) {
+      setLoading(true);
+    }
     setError(null);
 
     try {
       const chatHistory = await authFetch<ChatMessage[]>("/chat/", token);
 
-      // Process chat history into today and previous
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -61,7 +79,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
         const chatDate = new Date(chat.timestamp);
         const entry: ChatEntry = {
           id: `chat-${index}`,
-          title: chat.question,
+          question: chat.question,
+          answer: chat.answer,
           time: chatDate,
         };
 
@@ -78,14 +97,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
       console.error("Failed to fetch chat history:", err);
       setError("Failed to load chat history");
     } finally {
-      setLoading(false);
+      if (showLoading) {
+        setLoading(false);
+      }
     }
   };
 
   const handleChatSelect = (chatEntry: ChatEntry) => {
-    // This would be implemented later to load a specific chat
-    console.log("Selected chat:", chatEntry);
-    // For now, just close the dashboard on mobile
+    if (onSelectChat) {
+      const messages = [
+        { id: Date.now(), text: chatEntry.question, sender: "user" },
+        { id: Date.now() + 1, text: chatEntry.answer, sender: "bot" },
+      ];
+      onSelectChat(messages);
+    }
     if (window.innerWidth < 768) {
       setIsOpen(false);
     }
@@ -153,7 +178,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                           className="mr-2 text-gray-500"
                         />
                         <span className="text-sm truncate max-w-[150px]">
-                          {chat.title}
+                          {chat.question}
                         </span>
                       </div>
                       <span className="text-xs text-gray-500">
@@ -186,7 +211,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                           className="mr-2 text-gray-500"
                         />
                         <span className="text-sm truncate max-w-[150px]">
-                          {chat.title}
+                          {chat.question}
                         </span>
                       </div>
                       <span className="text-xs text-gray-500">

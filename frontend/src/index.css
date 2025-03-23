@@ -2,12 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-
-/* Add these styles to your index.css file */
+/* Fixed markdown content styles */
 .markdown-content {
     width: 100%;
+    overflow-x: auto;
+    /* Allow horizontal scroll for wide content only */
+    overflow-y: visible;
+    /* Don't add vertical scroll */
+    line-height: 1.6;
 }
 
+/* Typography */
 .markdown-content strong,
 .markdown-content b {
     font-weight: bold;
@@ -29,9 +34,11 @@
     margin-bottom: 0.5rem;
 }
 
+/* Lists */
 .markdown-content ul,
 .markdown-content ol {
     padding-left: 1.5rem;
+    margin-bottom: 1em;
 }
 
 .markdown-content ul {
@@ -46,10 +53,12 @@
     margin-bottom: 0.5rem;
 }
 
+/* Code blocks */
 .markdown-content code {
     background-color: rgba(0, 0, 0, 0.05);
     padding: 0.1rem 0.2rem;
     border-radius: 0.2rem;
+    font-family: monospace;
 }
 
 .markdown-content pre {
@@ -57,4 +66,74 @@
     padding: 0.5rem;
     border-radius: 0.2rem;
     overflow-x: auto;
+    margin-bottom: 1em;
+}
+
+.markdown-content pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+/* Tables */
+.markdown-content table {
+    border-collapse: collapse;
+    margin: 1rem 0;
+    width: 100%;
+}
+
+.markdown-content th,
+.markdown-content td {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+/* Blockquotes */
+.markdown-content blockquote {
+    border-left: 4px solid #ddd;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: #666;
+}
+
+/* KaTeX specific fixes */
+.katex {
+    font-size: 1.1em !important;
+    display: inline-flex !important;
+    /* Changed to inline-flex */
+    white-space: normal !important;
+    text-indent: 0 !important;
+}
+
+.katex-display {
+    margin: 0.5em 0 !important;
+    /* Reduced margins */
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    display: flex !important;
+    justify-content: center !important;
+}
+
+/* Fix for display math */
+.katex-display>.katex {
+    display: block !important;
+    max-width: 100% !important;
+}
+
+/* Fix for empty space after math content */
+.katex-html {
+    display: none !important;
+    /* Hide redundant HTML rendering */
+}
+
+/* Ensure inline math doesn't cause wrapping issues */
+.katex-mathml {
+    display: none !important;
+}
+
+/* Prevent scroll in message containers */
+.max-w-xl {
+    max-width: 36rem;
+    /* Default max-w-xl in Tailwind */
+    overflow-wrap: break-word;
 }
