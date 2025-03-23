@@ -36,19 +36,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const pollingIntervalRef = useRef<number | null>(null);
 
   useEffect(() => {
-    // Initial fetch when component mounts or dashboard opens
     if (isLoggedIn && isOpen) {
       fetchChatHistory();
 
-      // Set up polling interval (every 5 seconds)
       pollingIntervalRef.current = window.setInterval(() => {
         if (isLoggedIn && isOpen) {
-          fetchChatHistory(false); // false means don't show loading indicator for polling
+          fetchChatHistory(false);
         }
       }, 5000);
     }
 
-    // Clean up interval when component unmounts or dashboard closes
     return () => {
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);

@@ -8,13 +8,10 @@ from fastapi.security.utils import get_authorization_scheme_param
 from pydantic import BaseModel
 from config.settings import settings
 
-# Password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# OAuth2 scheme for token extraction
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
-# Custom OAuth2 scheme for optional authentication
 class OAuth2PasswordBearerOptional:
     def __init__(self, tokenUrl: str):
         self.oauth2_scheme = OAuth2PasswordBearer(tokenUrl=tokenUrl, auto_error=False)
@@ -28,7 +25,6 @@ class OAuth2PasswordBearerOptional:
             return None
         return param
 
-# Create instance of optional scheme
 oauth2_scheme_optional = OAuth2PasswordBearerOptional(tokenUrl="/api/auth/login")
 
 class TokenData(BaseModel):

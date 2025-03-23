@@ -6,7 +6,6 @@ import { AuthProvider } from "./context/AuthContext";
 import { Home } from './pages/Home';
 import { SignIn } from './pages/SignIn';
 import { SignUp } from './pages/SignUp';
-{/*import  { Footer } from './components/Footer';*/}
 
 
 function App() {
@@ -31,8 +30,6 @@ function App() {
               />
             </Routes>
           </div>
-          {/* <Footer/> */}
-          {/* Add the Footer component here */}
         </div>
       </Router>
     </AuthProvider>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Menu, Loader } from "lucide-react";
+import { Send, Menu, Loader, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { apiFetch, authFetch } from "../services/api";
 import TeX from "@matejmazur/react-katex";
@@ -27,15 +27,10 @@ interface DashboardProps {
 }
 
 const MarkdownWithLatex: React.FC<{ content: string }> = ({ content }) => {
-  // Pre-process content to handle standalone LaTeX expressions that aren't
-  // properly captured by remark-math (like $...$ and \[...\])
   const processContent = (text: string) => {
-    // First handle inline LaTeX with $...$
     let processed = text.replace(/\$([^$\n]+?)\$/g, (match, latex) => {
       return `$${latex}$`;
     });
-
-    // Handle display LaTeX with \[...\] or $$...$$
     processed = processed.replace(/\\\[(.*?)\\\]/gs, (match, latex) => {
       return `$$${latex}$$`;
     });
@@ -121,7 +116,6 @@ const MarkdownWithLatex: React.FC<{ content: string }> = ({ content }) => {
     ),
   };
 
-  // For any LaTeX expressions that weren't properly parsed by remark-math
   const processedContent = processContent(content);
 
   return (
@@ -143,6 +137,7 @@ export const ChatInterface = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [dashboardKey, setDashboardKey] = useState(0);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
   const { user, token } = useAuth() as {
     user: User | null;
     token: string | null;
@@ -154,6 +149,22 @@ export const ChatInterface = () => {
     if (token) localStorage.setItem("auth_token", token);
     else localStorage.removeItem("auth_token");
   }, [token]);
+
+  useEffect(() => {
+    if (!user) {
+      setShowLoginPopup(true);
+    } else {
+      setShowLoginPopup(false);
+    }
+  }, [user]);
+
+  const handleLoginRedirect = () => {
+    window.location.href = "/login"; 
+  };
+
+  const handleContinueWithoutLogin = () => {
+    setShowLoginPopup(false);
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -215,6 +226,42 @@ export const ChatInterface = () => {
 
   return (
     <div className="flex h-screen overflow-hidden">
+      {showLoginPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800">
+                Login Reminder
+              </h2>
+              <button
+                onClick={handleContinueWithoutLogin}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <p className="mb-6 text-gray-600">
+              Login to store your chat history and access it later. Without
+              logging in, your conversations won't be saved.
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={handleContinueWithoutLogin}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                Continue
+              </button>
+              <button
+                onClick={handleLoginRedirect}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+              >
+                Login
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Dashboard
         key={dashboardKey}
         isOpen={isDashboardOpen}
@@ -294,8 +341,8 @@ export const ChatInterface = () => {
                               ? `https://ui-avatars.com/api/?name=${encodeURIComponent(
                                   user.email
                                 )}&background=random`
-                              : "https://plus.unsplash.com/premium_photo-1677094310947-c8ffdc3d3355?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                            : "https://plus.unsplash.com/premium_photo-1677094310947-c8ffdc3d3355?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                              : "https://i.pinimg.com/236x/4b/b2/bb/4bb2bb45bd21bb55053cebbd672b85f2.jpg"
+                            : "https://i.pinimg.com/736x/15/34/92/153492d5cc36e23919920d27ab4b08cc.jpg"
                         }
                         alt={message.sender}
                         className="h-8 w-8 rounded-full flex-shrink-0"
@@ -321,7 +368,7 @@ export const ChatInterface = () => {
                   <div className="flex justify-start">
                     <div className="flex items-start max-w-xl">
                       <img
-                        src="https://plus.unsplash.com/premium_photo-1677094310947-c8ffdc3d3355?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        src="https://i.pinimg.com/736x/15/34/92/153492d5cc36e23919920d27ab4b08cc.jpg"
                         alt="bot"
                         className="h-8 w-8 rounded-full flex-shrink-0"
                       />

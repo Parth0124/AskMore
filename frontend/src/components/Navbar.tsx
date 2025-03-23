@@ -17,7 +17,6 @@ export const Navbar = () => {
         setIsProfileOpen(false);
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -28,7 +27,6 @@ export const Navbar = () => {
     <nav className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Left Section - Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <MessageSquare className="h-8 w-8 text-indigo-600" />
@@ -37,8 +35,6 @@ export const Navbar = () => {
               </span>
             </Link>
           </div>
-
-          {/* Center Section - Navigation Links */}
           <div className="flex-1 flex justify-center space-x-4">
             <Link
               to="/"
@@ -47,8 +43,6 @@ export const Navbar = () => {
               Home
             </Link>
           </div>
-
-          {/* Right Section - Profile */}
           <div className="flex items-center">
             <div className="relative" ref={dropdownRef}>
               <button
@@ -65,7 +59,6 @@ export const Navbar = () => {
                   <User className="h-8 w-8 p-1 border-2 border-gray-300 rounded-full hover:border-indigo-600" />
                 )}
               </button>
-
               {isProfileOpen && (
                 <div className="absolute right-0 w-48 mt-2 py-2 bg-white rounded-lg shadow-xl z-10">
                   {user ? (

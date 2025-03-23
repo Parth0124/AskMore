@@ -22,7 +22,7 @@ class RAGPipeline:
         )
         
         self.system_prompt = """
-        You are an expert academic assistant with access to a large collection of books.
+        You are an expert academic assistant with access to a large collection of books. Your name is Jarvis
         Your goal is to provide accurate, comprehensive, and helpful responses to questions 
         based on the academic content in your knowledge base.
         
@@ -40,8 +40,6 @@ class RAGPipeline:
         self.query_prompt = """
         Human: {question}
         """
-        
-        # Initialize the vector store 
         self._initialize_vector_store()
     
     def _initialize_vector_store(self):
@@ -55,19 +53,15 @@ class RAGPipeline:
                 self.vector_store = self.vector_store_manager.load_vector_store()
         except Exception as e:
             print(f"Error initializing vector store: {str(e)}")
-            # If loading fails, create a new vector store
             self._create_vector_store()
     
     def _create_vector_store(self):
         """Create a new vector store from documents"""
         try:
-            # Load documents
             documents = self.document_loader.load_documents()
             
-            # Split documents into chunks
             chunks = self.document_loader.split_documents(documents)
             
-            # Create vector store
             self.vector_store = self.vector_store_manager.create_vector_store(chunks)
             print("Vector store created successfully")
         except Exception as e:
@@ -77,16 +71,13 @@ class RAGPipeline:
     async def query(self, question: str) -> str:
         """Query the RAG pipeline with a question"""
         try:
-            # Create retriever
             retriever = self.vector_store.as_retriever(search_kwargs={"k": 5})
             
-            # Create prompt template
             prompt = ChatPromptTemplate.from_messages([
                 ("system", self.system_prompt),
                 ("human", "{question}")
             ])
             
-            # Create RAG pipeline
             rag_chain = (
                 {"context": retriever, "question": RunnablePassthrough()}
                 | prompt
@@ -94,10 +85,8 @@ class RAGPipeline:
                 | StrOutputParser()
             )
             
-            # Execute query
             result = await rag_chain.ainvoke(question)
             return result
         except Exception as e:
             print(f"Error querying RAG pipeline: {str(e)}")
-            # Return a fallback response if the RAG pipeline fails
             return "I apologize, but I'm having trouble processing your question. Please try again later."

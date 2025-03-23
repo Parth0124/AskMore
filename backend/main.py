@@ -8,16 +8,14 @@ import uvicorn
 
 app = FastAPI(title="Academic Chatbot API", description="Backend for academic-specific chatbot with RAG pipeline")
 
-# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Update this with your frontend URL in production
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Add home route
 @app.get("/", tags=["Root"])
 async def root():
     return {"message": "Welcome to the AskMore Backend API"}
@@ -26,7 +24,6 @@ async def root():
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(chat_router, prefix="/api/chat", tags=["Chats"])
 
-# Startup and shutdown events
 @app.on_event("startup")
 async def startup_db_client():
     await connect_to_mongodb()

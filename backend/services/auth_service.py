@@ -22,7 +22,7 @@ class AuthService:
         self._ensure_db()
         user = await self.users_collection.find_one({"email": email})
         if user and "_id" in user:
-            user["_id"] = str(user["_id"])  # Convert ObjectId to string
+            user["_id"] = str(user["_id"])
         return user
         
     async def get_user_by_id(self, user_id: str) -> Optional[Dict[str, Any]]:
@@ -31,7 +31,7 @@ class AuthService:
         try:
             user = await self.users_collection.find_one({"_id": ObjectId(user_id)})
             if user and "_id" in user:
-                user["_id"] = str(user["_id"])  # Convert ObjectId to string
+                user["_id"] = str(user["_id"])
             return user
         except Exception as e:
             print(f"Error fetching user by ID: {str(e)}")
@@ -45,7 +45,6 @@ class AuthService:
             chat_history=[]
         )
         
-        # Exclude id field to let MongoDB generate ObjectId
         user_dict = db_user.model_dump(by_alias=True, exclude={"id"})
         
         result = await self.users_collection.insert_one(user_dict)
@@ -64,9 +63,6 @@ class AuthService:
         if not verify_password(password, user["hashed_password"]):
             return None
         return user
-        
-    # This method was causing confusion - it's already imported from core.security
-    # Let's rename it to avoid the name conflict
     def generate_access_token(self, data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
         """Create access token"""
         return create_access_token(data, expires_delta)

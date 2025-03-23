@@ -35,19 +35,16 @@ class ChatService:
     async def store_chat_message(self, user_id: str, question: str, answer: str) -> None:
         self._ensure_db()
         try:
-            # Validate user exists
             user = await self.users_collection.find_one({"_id": ObjectId(user_id)})
             if not user:
                 raise HTTPException(status_code=404, detail="User not found")
 
-            # Create properly structured chat message
             chat_message = {
                 "question": question,
                 "answer": answer,
                 "timestamp": datetime.utcnow()
             }
 
-            # Update with proper MongoDB operator
             result = await self.users_collection.update_one(
                 {"_id": ObjectId(user_id)},
                 {"$push": {"chat_history": chat_message}}

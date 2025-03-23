@@ -6,6 +6,7 @@ import { apiFetch } from "../services/api";
 export const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [verifyPassword, setVerifyPassword] = useState("");
   const [error, setError] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -16,6 +17,7 @@ export const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!acceptTerms) return setError("Please accept the Terms and Conditions");
+    if (password !== verifyPassword) return setError("Passwords do not match");
 
     setIsSubmitting(true);
     try {
@@ -26,16 +28,11 @@ export const SignUp = () => {
           body: JSON.stringify({ email, password }),
         }
       );
-
-      // Clear any previous errors
       setError("");
-
-      // Show success modal instead of immediate redirection
       setShowSuccessModal(true);
-
-      // Reset the form fields
       setEmail("");
       setPassword("");
+      setVerifyPassword("");
       setAcceptTerms(false);
     } catch (err: any) {
       console.error("Signup error:", err);
@@ -52,7 +49,6 @@ export const SignUp = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-      {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg max-w-md w-full mx-4">
@@ -72,11 +68,11 @@ export const SignUp = () => {
         </div>
       )}
 
-      <div className="max-w-4xl w-full flex rounded-lg shadow-lg overflow-hidden">
+      <div className="max-w-4xl w-full flex rounded-lg shadow-lg overflow-hidden mx-auto">
         <div className="hidden md:block md:w-1/2 bg-white">
           <img
-            src="https://images.unsplash.com/photo-1533038590840-1cde6e668a91?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
-            alt="Monstera plant"
+            src="https://i.pinimg.com/736x/a2/ef/7b/a2ef7bdef4126e5f299883f6168c0331.jpg"
+            alt="Login background"
             className="w-full h-full object-cover"
             style={{ maxHeight: "600px" }}
           />
@@ -141,6 +137,24 @@ export const SignUp = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Create password"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="verifyPassword"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Verify Password
+                </label>
+                <input
+                  id="verifyPassword"
+                  type="password"
+                  value={verifyPassword}
+                  onChange={(e) => setVerifyPassword(e.target.value)}
+                  placeholder="Verify password"
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required
                 />

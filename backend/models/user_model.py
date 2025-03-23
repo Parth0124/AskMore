@@ -4,7 +4,6 @@ from bson import ObjectId
 from typing import List, Optional, Annotated
 from pydantic.functional_validators import BeforeValidator
 
-# Helper to convert ObjectId to string
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
 class ChatMessage(BaseModel):

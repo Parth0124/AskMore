@@ -40,11 +40,8 @@ async def create_chat(
 ) -> ChatResponse:
     """Process a chat message and get response from RAG pipeline"""
     question = chat_request.question
-
-    # Process question through RAG pipeline
     answer = await chat_service.process_question(question)
 
-    # Store chat history only if user is logged in
     if current_user and current_user.get("user_id"):
         try:
             await chat_service.store_chat_message(current_user["user_id"], question, answer)

@@ -26,13 +26,11 @@ class DocumentLoader:
         """Load all documents from the data directory"""
         documents = []
         
-        # Make sure the data directory exists
         if not os.path.exists(self.data_dir):
             os.makedirs(self.data_dir)
             print(f"Created data directory: {self.data_dir}")
             return documents
         
-        # Load PDF files
         for pdf_path in glob.glob(os.path.join(self.data_dir, "**/*.pdf"), recursive=True):
             try:
                 loader = PyPDFLoader(pdf_path)
@@ -41,7 +39,6 @@ class DocumentLoader:
             except Exception as e:
                 print(f"Error loading PDF {pdf_path}: {str(e)}")
         
-        # Load text files
         for txt_path in glob.glob(os.path.join(self.data_dir, "**/*.txt"), recursive=True):
             try:
                 loader = TextLoader(txt_path)
@@ -50,7 +47,6 @@ class DocumentLoader:
             except Exception as e:
                 print(f"Error loading text file {txt_path}: {str(e)}")
         
-        # Load DOCX files
         for docx_path in glob.glob(os.path.join(self.data_dir, "**/*.docx"), recursive=True):
             try:
                 loader = Docx2txtLoader(docx_path)
@@ -59,7 +55,6 @@ class DocumentLoader:
             except Exception as e:
                 print(f"Error loading DOCX file {docx_path}: {str(e)}")
         
-        # Load EPUB files
         for epub_path in glob.glob(os.path.join(self.data_dir, "**/*.epub"), recursive=True):
             try:
                 loader = UnstructuredEPubLoader(epub_path)

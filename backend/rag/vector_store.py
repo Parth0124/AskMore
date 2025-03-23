@@ -16,10 +16,8 @@ class VectorStoreManager:
         """Create a vector store from documents"""
         vector_store = FAISS.from_documents(documents, self.embeddings)
         
-        # Create directory if it doesn't exist
         os.makedirs(self.vector_db_path, exist_ok=True)
         
-        # Save vector store to disk
         vector_store.save_local(self.vector_db_path)
         print(f"Saved vector store to {self.vector_db_path}")
         
@@ -33,7 +31,7 @@ class VectorStoreManager:
         vector_store = FAISS.load_local(
             self.vector_db_path, 
             self.embeddings,
-            allow_dangerous_deserialization=True  # Add this parameter
+            allow_dangerous_deserialization=True  
         )
     
         print(f"Loaded vector store from {self.vector_db_path}")
