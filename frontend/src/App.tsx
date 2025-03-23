@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Dashboard } from './components/Dashboard';
 import { ChatInterface } from './components/ChatInterface';
+import { AuthProvider } from "./context/AuthContext";
 import { Home } from './pages/Home';
 import { SignIn } from './pages/SignIn';
 import { SignUp } from './pages/SignUp';
@@ -11,8 +11,8 @@ import { SignUp } from './pages/SignUp';
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
+    <AuthProvider>
+      <Router>
         <div className="min-h-screen bg-gray-50 flex flex-col">
           <Navbar />
           <div className="flex-grow">
@@ -31,10 +31,11 @@ function App() {
               />
             </Routes>
           </div>
-         {/* <Footer/> */}{/* Add the Footer component here */}
+          {/* <Footer/> */}
+          {/* Add the Footer component here */}
         </div>
-      </AuthProvider>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 
