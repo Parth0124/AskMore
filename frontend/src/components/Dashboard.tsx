@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { format } from "date-fns";
 import { Menu, MessageSquare, PlusCircle, Loader } from "lucide-react";
 import { authFetch } from "../services/api";
 
@@ -29,8 +28,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onNewChat,
   onSelectChat,
 }) => {
-  const [todayChats, setTodayChats] = useState<ChatEntry[]>([]);
-  const [previousChats, setPreviousChats] = useState<ChatEntry[]>([]);
+  const [chats, setChats] = useState<ChatEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const token = localStorage.getItem("auth_token");
@@ -69,30 +67,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
     try {
       const chatHistory = await authFetch<ChatMessage[]>("/chat/", token);
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const allChats = chatHistory.map((chat, index) => ({
+        id: `chat-${index}`,
+        question: chat.question,
+        answer: chat.answer,
+        time: new Date(chat.timestamp),
+      }));
 
-      const todayEntries: ChatEntry[] = [];
-      const previousEntries: ChatEntry[] = [];
-
-      chatHistory.forEach((chat, index) => {
-        const chatDate = new Date(chat.timestamp);
-        const entry: ChatEntry = {
-          id: `chat-${index}`,
-          question: chat.question,
-          answer: chat.answer,
-          time: chatDate,
-        };
-
-        if (chatDate >= today) {
-          todayEntries.push(entry);
-        } else {
-          previousEntries.push(entry);
-        }
-      });
-
-      setTodayChats(todayEntries);
-      setPreviousChats(previousEntries);
+      setChats(allChats);
     } catch (err) {
       console.error("Failed to fetch chat history:", err);
       setError("Failed to load chat history");
@@ -159,71 +141,29 @@ export const Dashboard: React.FC<DashboardProps> = ({
       )}
 
       {isLoggedIn && !loading && (
-        <>
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">Today</h3>
-            {todayChats.length === 0 ? (
-              <p className="text-sm text-gray-400">No chats today</p>
-            ) : (
-              <ul>
-                {todayChats.map((chat) => (
-                  <li key={chat.id} className="mb-2">
-                    <button
-                      onClick={() => handleChatSelect(chat)}
-                      className="w-full flex items-center justify-between p-2 hover:bg-gray-100 rounded text-left"
-                    >
-                      <div className="flex items-center">
-                        <MessageSquare
-                          size={16}
-                          className="mr-2 text-gray-500"
-                        />
-                        <span className="text-sm truncate max-w-[150px]">
-                          {chat.question}
-                        </span>
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {format(chat.time, "HH:mm")}
+        <div className="p-4">
+          {chats.length === 0 ? (
+            <p className="text-sm text-gray-400">No chats available</p>
+          ) : (
+            <ul>
+              {chats.map((chat) => (
+                <li key={chat.id} className="mb-2">
+                  <button
+                    onClick={() => handleChatSelect(chat)}
+                    className="w-full flex items-center p-2 hover:bg-gray-100 rounded text-left"
+                  >
+                    <div className="flex items-center">
+                      <MessageSquare size={16} className="mr-2 text-gray-500" />
+                      <span className="text-sm truncate max-w-[180px]">
+                        {chat.question}
                       </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">
-              Previous Days
-            </h3>
-            {previousChats.length === 0 ? (
-              <p className="text-sm text-gray-400">No previous chats</p>
-            ) : (
-              <ul>
-                {previousChats.map((chat) => (
-                  <li key={chat.id} className="mb-2">
-                    <button
-                      onClick={() => handleChatSelect(chat)}
-                      className="w-full flex items-center justify-between p-2 hover:bg-gray-100 rounded text-left"
-                    >
-                      <div className="flex items-center">
-                        <MessageSquare
-                          size={16}
-                          className="mr-2 text-gray-500"
-                        />
-                        <span className="text-sm truncate max-w-[150px]">
-                          {chat.question}
-                        </span>
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {format(chat.time, "MMM dd")}
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </>
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       )}
     </div>
   );
